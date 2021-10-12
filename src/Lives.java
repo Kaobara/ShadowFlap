@@ -22,10 +22,14 @@ public class Lives {
             if(i==0) {
                 FULL_LIFE_IMAGE.draw(FIRST_HEART_POINT.x, FIRST_HEART_POINT.y);
                 tempPoint = FIRST_HEART_POINT;
+            } else if(i<=numLives) {
+                tempPoint = new Point(tempPoint.x+50, tempPoint.y);
+                FULL_LIFE_IMAGE.draw(tempPoint.x, tempPoint.y);
             } else {
                 tempPoint = new Point(tempPoint.x+50, tempPoint.y);
                 NO_LIFE_IMAGE.draw(tempPoint.x, tempPoint.y);
             }
         }
+
     }
 }

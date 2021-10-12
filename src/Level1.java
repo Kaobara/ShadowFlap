@@ -12,11 +12,11 @@ public class Level1 extends Level{
             (SCREEN_HEIGHT-FONT_HEIGHT)/2 - 68);
 
     // Weapons
-    private ArrayList<Weapon> Weapons = new ArrayList<Weapon>();
-    private int leastRecentWeaponNum = 0;
-    private int mostRecentWeaponNum = -1;
-    private int weaponNum = 0;
-    private Point weaponPoint;
+//    private ArrayList<Weapon> Weapons = new ArrayList<Weapon>();
+//    private int leastRecentWeaponNum = 0;
+//    private int mostRecentWeaponNum = -1;
+//    private int weaponNum = 0;
+//    private Point weaponPoint;
 
     public Level1(Bird bird) {
         super(bird);
@@ -32,6 +32,5 @@ public class Level1 extends Level{
     @Override
     public void updateRunning(Input input) {
         super.updateRunning(input);
-        lifebar.drawLives();
     }
 }

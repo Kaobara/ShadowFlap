@@ -30,14 +30,9 @@ public abstract class Level {
             ((SCREEN_HEIGHT-FONT_HEIGHT)/2)+FINAL_SCORE_HEIGHT_DIFFERENCE);
     protected final Point COUNTER_POINT = new Point(100, 100);
 
-    // Pipe Options
-    protected final int PIPE_GAP = 168;
-    protected final int MAX_SPAWN = 100;
-    protected final int MID_SPAWN = 300;
-    protected final int MIN_SPAWN = 500;
 
     // Pipes
-    protected ArrayList<EntitySet> PipeSetArray = new ArrayList<EntitySet>();
+    protected ArrayList<EntitySet> pipeSetArray = new ArrayList<EntitySet>();
     protected int leastRecentPipeSetNum = 0;
     protected int mostRecentPipeSetNum = -1;
     protected int pipeSetNum = 0;
@@ -54,8 +49,8 @@ public abstract class Level {
     protected int score = 0;
     protected int frameCount = 0;
 
-
-    private int currentTimeScale = 0;
+    protected int currentTimeScale = 0;
+    protected int spawnSpeed = 100;
 
     public Level(Bird bird) {
         this.bird = bird;
@@ -68,5 +63,7 @@ public abstract class Level {
     public void updateRunning(Input input) {
         // A constant score.
         FONT.drawString("SCORE:" + score, COUNTER_POINT.x, COUNTER_POINT.y);
+        lifebar.drawLives();
+
     }
 }

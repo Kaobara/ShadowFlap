@@ -1,5 +1,6 @@
 import bagel.DrawOptions;
 import bagel.Image;
+import bagel.Window;
 import bagel.util.Point;
 
 public class Entity {
@@ -7,21 +8,19 @@ public class Entity {
     private Image entityImage;
 
     // Entity Attributes
-    private double x;
+    private double x = Window.getWidth();
     private double y;
     private DrawOptions entityRotation = new DrawOptions().setRotation(0);
     private double moveSpeed = 10;
 
     // Entity constructor
-    public Entity(Image entityImage, double x, double y) {
+    public Entity(Image entityImage, double y) {
         this.entityImage = entityImage;
-        this.x = x;
         this.y = y;
     }
 
-    public Entity(Image entityImage, double x, double y, DrawOptions entityRotation) {
+    public Entity(Image entityImage, double y, DrawOptions entityRotation) {
         this.entityImage = entityImage;
-        this.x = x;
         this.y = y;
         this.entityRotation = entityRotation;
     }
