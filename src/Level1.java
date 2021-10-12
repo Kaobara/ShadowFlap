@@ -18,8 +18,8 @@ public class Level1 extends Level{
 //    private int weaponNum = 0;
 //    private Point weaponPoint;
 
-    public Level1(Bird bird) {
-        super(bird);
+    public Level1() {
+        super();
         super.lifebar = new Lives(STARTING_LIVES);
     }
 

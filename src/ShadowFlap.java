@@ -16,19 +16,16 @@ public class ShadowFlap extends AbstractGame {
     private final int SCREEN_WIDTH = Window.getWidth();
     private final int SCREEN_HEIGHT = Window.getHeight();
 
-    private final Point BIRD_POINT = new Point(200, 350);
+
 
     // The Backgrounds
     private final Image BACKGROUND_IMAGE0 = new Image("res/level-0/background.png");
     private final Image BACKGROUND_IMAGE1 = new Image("res/level-1/background.png");
 
     // Images of Bird
-    private final Image BIRD_IMAGE_UP0 = new Image("res/level-0/birdWingUp.png");
-    private final Image BIRD_IMAGE_DOWN0 = new Image("res/level-0/birdWingDown.png");
     private final Image BIRD_IMAGE_UP1 = new Image("res/level-1/birdWingUp.png");
     private final Image BIRD_IMAGE_DOWN1 = new Image("res/level-1/birdWingDown.png");
-    // Bird
-    private Bird bird = new Bird(BIRD_POINT.x, BIRD_POINT.y, BIRD_IMAGE_UP0, BIRD_IMAGE_DOWN0);
+
 
     // Game states. Default state is start,
     private enum GameState{
@@ -45,7 +42,7 @@ public class ShadowFlap extends AbstractGame {
         Level1
     };
     private LevelState currentLevelState = LevelState.Level0;
-    private Level level;
+    private Level level = new Level0();;
 
     public ShadowFlap() {
     }
@@ -65,7 +62,6 @@ public class ShadowFlap extends AbstractGame {
     @Override
     public void update(Input input) {
         if(currentLevelState == LevelState.Level0) {
-            level = new Level0(bird);
 
             BACKGROUND_IMAGE0.draw(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
             // Starting state. Press space to start
@@ -79,6 +75,13 @@ public class ShadowFlap extends AbstractGame {
 
             if(state == GameState.Running) {
                 level.updateRunning(input);
+                if(level.getLives()==0) {
+                    state = GameState.LoseEnd;
+                }
+                if(level.isPassedThreshold()==true) {
+                    currentLevelState = LevelState.Level1;
+                    state = GameState.Start;
+                }
             }
         }
     }

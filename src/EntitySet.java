@@ -7,6 +7,7 @@ import bagel.util.Rectangle;
 public class EntitySet {
     private final Rectangle BROKEN_REC = new Rectangle(0, 0, 0, 0);
     private Boolean broken = false;
+    private Boolean outOfScreen = false;
 
     private final int SCREEN_HEIGHT = Window.getHeight();
     private final DrawOptions ROTATE_UPSIDE_DOWN = new DrawOptions().setRotation(Math.PI);
@@ -20,6 +21,20 @@ public class EntitySet {
 
     private Rectangle entityUpHitBox;
     private Rectangle entityDownHitBox;
+
+    public Rectangle getUpHitBox() {
+        return entityUpHitBox;
+    }
+    public Rectangle getDownHitBox() {
+        return entityDownHitBox;
+    }
+    public void setOutOfScreen() {
+        outOfScreen = true;
+    }
+
+    public boolean getIsBroken() {
+        return broken;
+    }
 
     public void spawnEntitySet(int ySpawn) {
         entityUp = new Entity(entityImage, -SCREEN_HEIGHT+ySpawn);
@@ -41,5 +56,9 @@ public class EntitySet {
             entityUpHitBox = BROKEN_REC;
             entityDownHitBox = BROKEN_REC;
         }
+    }
+
+    public void breaks() {
+        broken = true;
     }
 }

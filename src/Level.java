@@ -1,9 +1,11 @@
 import bagel.Font;
+import bagel.Image;
 import bagel.Input;
 import bagel.Window;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public abstract class Level {
     // Width Constants... THINK ABOUT PROGRAM-WIDE CONSTANTS!!!!
@@ -39,7 +41,9 @@ public abstract class Level {
 
     protected Point pipeSetPoint;
 
-    protected Bird bird;
+    protected final Point BIRD_SPAWN = new Point(200, 350);
+
+
 
     // Lives
     protected Lives lifebar;
@@ -52,8 +56,17 @@ public abstract class Level {
     protected int currentTimeScale = 0;
     protected int spawnSpeed = 100;
 
-    public Level(Bird bird) {
-        this.bird = bird;
+    // Pipe Options
+    protected final int MAX_SPAWN = 100;
+    protected final int MID_SPAWN = 300;
+    protected final int MIN_SPAWN = 500;
+
+    Random rand = new Random();
+
+    protected boolean passedThreshold = false;
+
+    public Level() {
+
     }
 
     public void updateStart(Input input) {
@@ -66,4 +79,13 @@ public abstract class Level {
         lifebar.drawLives();
 
     }
+
+    public int getLives() {
+        return lifebar.getLives();
+    }
+
+    public boolean isPassedThreshold() {
+        return passedThreshold;
+    }
+
 }

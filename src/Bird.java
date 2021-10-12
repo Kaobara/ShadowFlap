@@ -20,11 +20,6 @@ public class Bird {
     private double velocity=0;
 
     // Constructors
-    public Bird() {
-        this.x = (Window.getWidth())/2.0;
-        this.y = (Window.getHeight())/2.0;
-    }
-
     public Bird(double x, double y, Image birdImageUp, Image birdImageDown) {
         this.x = x;
         this.y = y;
