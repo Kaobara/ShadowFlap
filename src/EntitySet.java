@@ -10,7 +10,7 @@ public class EntitySet {
     private Boolean outOfScreen = false;
 
     private final int SCREEN_HEIGHT = Window.getHeight();
-    private final DrawOptions ROTATE_UPSIDE_DOWN = new DrawOptions().setRotation(Math.PI);
+    protected final DrawOptions ROTATE_UPSIDE_DOWN = new DrawOptions().setRotation(Math.PI);
 
     protected int ySpawn;
     protected Image entityImage;
@@ -19,8 +19,8 @@ public class EntitySet {
     private Entity entityUp;
     private Entity entityDown;
 
-    private Rectangle entityUpHitBox;
-    private Rectangle entityDownHitBox;
+    protected Rectangle entityUpHitBox;
+    protected Rectangle entityDownHitBox;
 
     public Rectangle getUpHitBox() {
         return entityUpHitBox;
@@ -32,9 +32,10 @@ public class EntitySet {
         outOfScreen = true;
     }
 
-    public boolean getIsBroken() {
+    public boolean isBroken() {
         return broken;
     }
+    public boolean isOutOfScreen() { return outOfScreen; }
 
     public void spawnEntitySet(int ySpawn) {
         entityUp = new Entity(entityImage, -SCREEN_HEIGHT+ySpawn);

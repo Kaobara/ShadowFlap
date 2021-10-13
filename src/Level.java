@@ -115,7 +115,7 @@ public abstract class Level {
 
         if(leastRecentPipeSetNum<=mostRecentPipeSetNum) {
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
-                if (!pipeSetArray.get(i).getIsBroken()) {
+                if (!pipeSetArray.get(i).isBroken()) {
                     pipeSetArray.get(i).updateEntitySet();
                 }
             }
@@ -127,7 +127,7 @@ public abstract class Level {
 
             //Win condition
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
-                if (!pipeSetArray.get(i).getIsBroken()) {
+                if (!pipeSetArray.get(i).isBroken()) {
                     if (birdHitBox1.centre().x < pipeSetArray.get(i).getUpHitBox().right() && birdHitBox1.centre().x > pipeSetArray.get(i).getUpHitBox().left() + 50
                             || birdHitBox2.centre().x < pipeSetArray.get(i).getUpHitBox().right() && birdHitBox2.centre().x > pipeSetArray.get(i).getUpHitBox().left() + 50) {
                         score++;
@@ -138,12 +138,28 @@ public abstract class Level {
 
             // If hitboxes collide, game over
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
-                if (!pipeSetArray.get(i).getIsBroken()) {
+                if (!pipeSetArray.get(i).isBroken()) {
                     if (birdHitBox1.intersects(pipeSetArray.get(i).getUpHitBox()) || birdHitBox1.intersects(pipeSetArray.get(i).getDownHitBox())
                             || birdHitBox2.intersects(pipeSetArray.get(i).getUpHitBox()) || birdHitBox2.intersects(pipeSetArray.get(i).getDownHitBox())) {
                         loseLife();
                         pipeSetArray.get(i).breaks();
                         leastRecentPipeSetNum++;
+                    }
+                }
+            }
+
+            for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
+                if(pipeSetArray.get(i) instanceof SteelPipe) {
+                    if(((SteelPipe) pipeSetArray.get(i)).getFramesOnScreen()%20 == 0) {
+                        ((SteelPipe) pipeSetArray.get(i)).spawnFlames();
+                        if (birdHitBox1.intersects(((SteelPipe) pipeSetArray.get(i)).getFlameUpHitBox()) ||
+                                birdHitBox1.intersects(((SteelPipe) pipeSetArray.get(i)).getFlameDownHitBox()) ||
+                                birdHitBox2.intersects(((SteelPipe) pipeSetArray.get(i)).getFlameUpHitBox()) ||
+                                birdHitBox2.intersects(((SteelPipe) pipeSetArray.get(i)).getFlameDownHitBox())) {
+                            loseLife();
+                            pipeSetArray.get(i).breaks();
+                            leastRecentPipeSetNum++;
+                        }
                     }
                 }
             }

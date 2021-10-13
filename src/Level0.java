@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Level0 extends Level {
     private final int LEVEL0_POINT_THRESHOLD = 10;
-    private final int STARTING_LIVES = 20;
+    private final int STARTING_LIVES = 3;
     private final int LEVELNUM = 0;
     private final int LEVEL0_SPAWN_OPTIONS = 3;
 
