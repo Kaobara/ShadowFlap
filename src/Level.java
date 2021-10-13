@@ -84,10 +84,10 @@ public abstract class Level {
     }
 
     public void updateRunning(Input input) {
+
         // A constant score.
         FONT.drawString("SCORE:" + score, COUNTER_POINT.x, COUNTER_POINT.y);
         lifebar.drawLives();
-        System.out.println(leastRecentPipeSetNum + " " + mostRecentPipeSetNum);
 
         // Inputs for actual flying motion
         if (input.wasPressed(Keys.SPACE)) {
@@ -113,6 +113,7 @@ public abstract class Level {
             loseLife();
         }
 
+        // Updating/Moving pipes
         if(leastRecentPipeSetNum<=mostRecentPipeSetNum) {
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
                 if (!pipeSetArray.get(i).isBroken()) {

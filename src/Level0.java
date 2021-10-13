@@ -9,7 +9,6 @@ public class Level0 extends Level {
     private final int STARTING_LIVES = 3;
     private final int LEVELNUM = 0;
     private final int LEVEL0_SPAWN_OPTIONS = 3;
-
     // Bird Images
     private final bagel.Image BIRD_IMAGE_UP0 = new bagel.Image("res/level-0/birdWingUp.png");
     private final bagel.Image BIRD_IMAGE_DOWN0 = new Image("res/level-0/birdWingDown.png");

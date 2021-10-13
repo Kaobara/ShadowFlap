@@ -41,7 +41,7 @@ public class ShadowFlap extends AbstractGame {
         Level1
     };
     private LevelState currentLevelState = LevelState.Level0;
-    private Level level = new Level1();
+    private Level level = new Level0();
 
     public ShadowFlap() {
     }

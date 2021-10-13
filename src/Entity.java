@@ -8,10 +8,10 @@ public class Entity {
     private Image entityImage;
 
     // Entity Attributes
-    private double x = Window.getWidth();
-    private double y;
+    protected double x = Window.getWidth();
+    protected double y;
     private DrawOptions entityRotation = new DrawOptions().setRotation(0);
-    private static double moveSpeed = 10;
+    private static double moveSpeed = 3;
 
     // Entity constructor
     public Entity() {

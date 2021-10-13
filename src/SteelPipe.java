@@ -9,7 +9,8 @@ public class SteelPipe extends EntitySet{
     private final Image PIPE_IMAGE = new Image("res/level-1/steelPipe.png");
 
     private final Image FLAME_IMAGE = new Image("res/level-1/flame.png");
-    private final double FLAME_SIZE = FLAME_IMAGE.getHeight();
+    private final double FLAME_HEIGHT = FLAME_IMAGE.getHeight();
+    private final double FLAME_WIDTH = FLAME_IMAGE.getWidth();
     private Rectangle flameUpHitBox;
     private Rectangle flameDownHitBox;
 
@@ -34,8 +35,10 @@ public class SteelPipe extends EntitySet{
 
     public void spawnFlames() {
         FLAME_IMAGE.drawFromTopLeft(entityUpHitBox.left(), entityUpHitBox.bottom(), ROTATE_UPSIDE_DOWN);
-        flameUpHitBox = FLAME_IMAGE.getBoundingBoxAt(new Point(entityUpHitBox.left(), entityUpHitBox.bottom()));
-        FLAME_IMAGE.drawFromTopLeft(entityDownHitBox.left(), entityDownHitBox.top()-FLAME_SIZE);
-        flameDownHitBox = FLAME_IMAGE.getBoundingBoxAt(new Point(entityDownHitBox.left(), entityDownHitBox.top()-FLAME_SIZE));
+        flameUpHitBox = FLAME_IMAGE.getBoundingBoxAt(new Point(entityUpHitBox.left() + (FLAME_WIDTH/2),
+                entityUpHitBox.bottom()+(FLAME_HEIGHT/2)));
+        FLAME_IMAGE.drawFromTopLeft(entityDownHitBox.left(), entityDownHitBox.top()-FLAME_HEIGHT);
+        flameDownHitBox = FLAME_IMAGE.getBoundingBoxAt(new Point(entityDownHitBox.left() + (FLAME_WIDTH/2),
+                entityDownHitBox.top()-(FLAME_HEIGHT/2)));
     }
 }
