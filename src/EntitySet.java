@@ -5,7 +5,7 @@ import bagel.util.Point;
 import bagel.util.Rectangle;
 
 public class EntitySet {
-    private final Rectangle BROKEN_REC = new Rectangle(0, 0, 0, 0);
+    private final Rectangle BROKEN_REC = new Rectangle(20, 0, 0, 0);
     private Boolean broken = false;
     private Boolean outOfScreen = false;
 
@@ -47,11 +47,11 @@ public class EntitySet {
     }
 
     public void updateEntitySet() {
+        entityUp.updateEntity();
+        entityDown.updateEntity();
+        entityUpHitBox = entityUp.getEntityImage().getBoundingBoxAt(entityUp.getPoint());
+        entityDownHitBox = entityDown.getEntityImage().getBoundingBoxAt(entityDown.getPoint());
         if(broken == false) {
-            entityUp.updateEntity();
-            entityDown.updateEntity();
-            entityUpHitBox = entityUp.getEntityImage().getBoundingBoxAt(entityUp.getPoint());
-            entityDownHitBox = entityDown.getEntityImage().getBoundingBoxAt(entityDown.getPoint());
         } else {
             entityUpHitBox = BROKEN_REC;
             entityDownHitBox = BROKEN_REC;

@@ -1,6 +1,6 @@
+import bagel.*;
 import bagel.Font;
 import bagel.Image;
-import bagel.Input;
 import bagel.Window;
 
 import java.awt.*;
@@ -21,6 +21,8 @@ public abstract class Level {
     protected final int FONT_SIZE = 48;
     protected final int FONT_HEIGHT = 29;
     protected final Font FONT = new Font("res/font/slkscr.ttf", FONT_SIZE);
+    protected int levelThreshold;
+    protected final int MAX_TIME_SCALE = 5;
 
     protected final Point INSTRUCTION_POINT = new Point((SCREEN_WIDTH-INSTRUCTIONS_WIDTH)/2,
             (SCREEN_HEIGHT-FONT_HEIGHT)/2);
@@ -42,42 +44,31 @@ public abstract class Level {
     protected Point pipeSetPoint;
 
     protected final Point BIRD_SPAWN = new Point(200, 350);
-
-
+    protected Bird bird;
+    bagel.util.Rectangle birdHitBox1;
+    bagel.util.Rectangle birdHitBox2;
 
     // Lives
     protected Lives lifebar;
-
+    abstract void loseLife();
 
     // Scores
     protected int score = 0;
     protected int frameCount = 0;
 
     protected int currentTimeScale = 0;
-    protected int spawnSpeed = 100;
+    protected double spawnSpeed = 100;
+
+    protected Entity entityTimeScale = new Entity();
 
     // Pipe Options
     protected final int MAX_SPAWN = 100;
     protected final int MID_SPAWN = 300;
     protected final int MIN_SPAWN = 500;
 
-    Random rand = new Random();
-
     protected boolean passedThreshold = false;
 
     public Level() {
-
-    }
-
-    public void updateStart(Input input) {
-        FONT.drawString("PRESS SPACE TO START", INSTRUCTION_POINT.x, INSTRUCTION_POINT.y);
-    }
-
-    public void updateRunning(Input input) {
-        // A constant score.
-        FONT.drawString("SCORE:" + score, COUNTER_POINT.x, COUNTER_POINT.y);
-        lifebar.drawLives();
-
     }
 
     public int getLives() {
@@ -88,4 +79,107 @@ public abstract class Level {
         return passedThreshold;
     }
 
+    public void updateStart(Input input) {
+        FONT.drawString("PRESS SPACE TO START", INSTRUCTION_POINT.x, INSTRUCTION_POINT.y);
+    }
+
+    public void updateRunning(Input input) {
+        // A constant score.
+        FONT.drawString("SCORE:" + score, COUNTER_POINT.x, COUNTER_POINT.y);
+        lifebar.drawLives();
+        System.out.println(leastRecentPipeSetNum + " " + mostRecentPipeSetNum);
+
+        // Inputs for actual flying motion
+        if (input.wasPressed(Keys.SPACE)) {
+            bird.setInitialFlyVelocity();
+        }
+
+        if (bird.getVelocity() < 0) {
+            bird.fly();
+        } else {
+            bird.fall();
+        }
+
+        birdHitBox1 = bird.getBirdImageUp().getBoundingBoxAt(bird.getPoint());
+        birdHitBox2 = bird.getBirdImageDown().getBoundingBoxAt(bird.getPoint());
+
+        // If bird goes out of bounds game over
+        // Lower bound
+        if (birdHitBox1.top() > SCREEN_HEIGHT || birdHitBox2.top() > SCREEN_HEIGHT) {
+            loseLife();
+        }
+        // Upper bound
+        if (birdHitBox1.bottom() < 0 || birdHitBox2.bottom() < 0) {
+            loseLife();
+        }
+
+        if(leastRecentPipeSetNum<=mostRecentPipeSetNum) {
+            for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
+                if (!pipeSetArray.get(i).getIsBroken()) {
+                    pipeSetArray.get(i).updateEntitySet();
+                }
+            }
+
+            if (pipeSetArray.get(leastRecentPipeSetNum).getUpHitBox().right() < 0) {
+                pipeSetArray.get(leastRecentPipeSetNum).setOutOfScreen();
+                leastRecentPipeSetNum++;
+            }
+
+            //Win condition
+            for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
+                if (!pipeSetArray.get(i).getIsBroken()) {
+                    if (birdHitBox1.centre().x < pipeSetArray.get(i).getUpHitBox().right() && birdHitBox1.centre().x > pipeSetArray.get(i).getUpHitBox().left() + 50
+                            || birdHitBox2.centre().x < pipeSetArray.get(i).getUpHitBox().right() && birdHitBox2.centre().x > pipeSetArray.get(i).getUpHitBox().left() + 50) {
+                        score++;
+                    }
+                }
+            }
+
+
+            // If hitboxes collide, game over
+            for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
+                if (!pipeSetArray.get(i).getIsBroken()) {
+                    if (birdHitBox1.intersects(pipeSetArray.get(i).getUpHitBox()) || birdHitBox1.intersects(pipeSetArray.get(i).getDownHitBox())
+                            || birdHitBox2.intersects(pipeSetArray.get(i).getUpHitBox()) || birdHitBox2.intersects(pipeSetArray.get(i).getDownHitBox())) {
+                        loseLife();
+                        pipeSetArray.get(i).breaks();
+                        leastRecentPipeSetNum++;
+                    }
+                }
+            }
+        }
+
+
+
+        if(score == levelThreshold) {
+            passedThreshold = true;
+        }
+    }
+
+    public void updateLoseEnd(Input input) {
+        FONT.drawString("GAME OVER", GAME_OVR_POINT.x,GAME_OVR_POINT.y);
+        FONT.drawString("FINAL SCORE: " + score, FINAL_SCORE_POINT.x, FINAL_SCORE_POINT.y);
+    }
+
+    public void updateWinEnd(Input input) {
+        FONT.drawString("CONGRATULATIONS", CONGRATS_POINT.x,CONGRATS_POINT.y);
+    }
+
+    public void increaseTimeScale() {
+        if(currentTimeScale<MAX_TIME_SCALE) {
+            entityTimeScale.increaseEntitySpeed();
+            spawnSpeed = spawnSpeed / 1.5;
+            spawnSpeed = Math.round(spawnSpeed);
+            currentTimeScale++;
+        }
+    }
+
+    public void decreaseTimeScale() {
+        if(currentTimeScale>0) {
+            entityTimeScale.decreaseEntitySpeed();
+            spawnSpeed = spawnSpeed * 1.5;
+            spawnSpeed = Math.round(spawnSpeed);
+            currentTimeScale--;
+        }
+    }
 }

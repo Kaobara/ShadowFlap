@@ -11,9 +11,12 @@ public class Entity {
     private double x = Window.getWidth();
     private double y;
     private DrawOptions entityRotation = new DrawOptions().setRotation(0);
-    private double moveSpeed = 10;
+    private static double moveSpeed = 10;
 
     // Entity constructor
+    public Entity() {
+    }
+
     public Entity(Image entityImage, double y) {
         this.entityImage = entityImage;
         this.y = y;
@@ -40,5 +43,17 @@ public class Entity {
     public void updateEntity() {
         x -= moveSpeed;
         entityImage.drawFromTopLeft(x, y, entityRotation);
+    }
+
+    // Increase speed
+    public void increaseEntitySpeed() {
+        moveSpeed *= 1.5;
+    }
+    public void decreaseEntitySpeed() {
+        moveSpeed /= 1.5;
+    }
+
+    public void resetEntitySpeed() {
+        moveSpeed = 10;
     }
 }

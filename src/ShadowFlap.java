@@ -2,6 +2,7 @@ import bagel.*;
 import bagel.Font;
 import bagel.Image;
 import bagel.Window;
+import org.lwjgl.system.CallbackI;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -22,9 +23,7 @@ public class ShadowFlap extends AbstractGame {
     private final Image BACKGROUND_IMAGE0 = new Image("res/level-0/background.png");
     private final Image BACKGROUND_IMAGE1 = new Image("res/level-1/background.png");
 
-    // Images of Bird
-    private final Image BIRD_IMAGE_UP1 = new Image("res/level-1/birdWingUp.png");
-    private final Image BIRD_IMAGE_DOWN1 = new Image("res/level-1/birdWingDown.png");
+
 
 
     // Game states. Default state is start,
@@ -42,7 +41,7 @@ public class ShadowFlap extends AbstractGame {
         Level1
     };
     private LevelState currentLevelState = LevelState.Level0;
-    private Level level = new Level0();;
+    private Level level = new Level0();
 
     public ShadowFlap() {
     }
@@ -55,13 +54,22 @@ public class ShadowFlap extends AbstractGame {
         game.run();
     }
 
+
+
     /**
      * Performs a state update.
      * allows the game to exit when the escape key is pressed.
      */
     @Override
     public void update(Input input) {
+        if(input.wasPressed(Keys.L)) {
+            level.increaseTimeScale();
+        }
+        if(input.wasPressed(Keys.K)) {
+            level.decreaseTimeScale();
+        }
         if(currentLevelState == LevelState.Level0) {
+
 
             BACKGROUND_IMAGE0.draw(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
             // Starting state. Press space to start
@@ -78,11 +86,43 @@ public class ShadowFlap extends AbstractGame {
                 if(level.getLives()==0) {
                     state = GameState.LoseEnd;
                 }
-                if(level.isPassedThreshold()==true) {
+                if(level.isPassedThreshold()) {
                     currentLevelState = LevelState.Level1;
                     state = GameState.Start;
+                    level = new Level1();
                 }
             }
+
+            if(state == GameState.LoseEnd) {
+                level.updateLoseEnd(input);
+            }
+        }
+
+        if(currentLevelState == LevelState.Level1) {
+            BACKGROUND_IMAGE1.draw(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
+
+            if(state == GameState.Start) {
+                level.updateStart(input);
+                if (input.isDown(Keys.SPACE)) {
+                    level.frameCount = 0;  // Think about protection and being able to directly edit frameCount ltr
+                    state = GameState.Running;
+                }
+            }
+
+            if(state == GameState.Running) {
+                level.updateRunning(input);
+                if(level.getLives()==0) {
+                    state = GameState.LoseEnd;
+                }
+                if(level.isPassedThreshold()) {
+                    state = GameState.WinEnd;
+                }
+            }
+        }
+
+        if(state == GameState.WinEnd) {
+            level.updateWinEnd(input);
+
         }
     }
 
