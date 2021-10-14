@@ -20,6 +20,7 @@ public class Level1 extends Level{
     private int weaponType;
     private int weaponSpawnSpeed;
     private Integer equippedItemIndex;
+    private Integer shotItemIndex;
 
     // Images of Bird
     private final bagel.Image BIRD_IMAGE_UP1 = new bagel.Image("res/level-1/birdWingUp.png");
@@ -36,7 +37,7 @@ public class Level1 extends Level{
         super();
         super.lifebar = new Lives(STARTING_LIVES);
         super.bird = new Bird(BIRD_SPAWN.x, BIRD_SPAWN.y, BIRD_IMAGE_UP1, BIRD_IMAGE_DOWN1);
-        super.levelThreshold = LEVEL1_POINT_THRESHOLD;
+        super.levelScoreThreshold = LEVEL1_POINT_THRESHOLD;
         super.entityTimeScale.resetEntitySpeed();
     }
 
@@ -53,7 +54,7 @@ public class Level1 extends Level{
 
     @Override
     public void updateRunning(Input input) {
-        // Spawn Pipes
+        // Spawn either Plastic Pipes or Steel Pipes between y=100 and y=500 (height)
         if (frameCount % spawnSpeed == 0) {
             int rand_pipe_type = ThreadLocalRandom.current().nextInt(LEVEL1_PIPE_TYPES);
             if(rand_pipe_type == 0) {
@@ -68,39 +69,47 @@ public class Level1 extends Level{
             super.pipeSetArray.get(mostRecentPipeSetNum).spawnEntitySet(rand_position);
         }
 
+        super.updateRunning(input);
 
+        // Spawn a random type of weapon, at a random interval in a random location between y = 100 adn 500
         weaponSpawnSpeed = ThreadLocalRandom.current().nextInt(WEAPON_SPAWN_SPEED_MIN, WEAPON_SPAWN_SPEED_MAX+1);
         weaponType = ThreadLocalRandom.current().nextInt(WEAPON_TYPES);
         if (frameCount%weaponSpawnSpeed == 0 ) {
             int rand_position = ThreadLocalRandom.current().nextInt(MAX_SPAWN, MIN_SPAWN+1);
             if(weaponType == 0) {
+                System.out.println("SPAWNING ROCK");
                 weapons.add(weaponNum, new Rock(rand_position));
             } else {
+                System.out.println("SPAWNING BOMB");
                 weapons.add(weaponNum, new Bomb(rand_position));
             }
             mostRecentWeaponNum++;
             weaponNum++;
-        }
 
-        super.updateRunning(input);
-
-        for (int j = leastRecentWeaponNum; j <= mostRecentWeaponNum; j++) {
+            // If a weapon spawns in the same space as a pipe, immediately disable it
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
-                if (!weapons.get(j).checkDisabled() &&
-                        (weapons.get(j).getWeaponHitBox().intersects(pipeSetArray.get(i).getUpHitBox()) ||
-                                weapons.get(j).getWeaponHitBox().intersects(pipeSetArray.get(i).getDownHitBox()))) {
-                    weapons.get(j).disableWeapon();
+                if (!weapons.get(mostRecentWeaponNum).checkDisabled() &&
+                        (weapons.get(mostRecentWeaponNum).getWeaponHitBox().intersects(pipeSetArray.get(i).getUpHitBox()) ||
+                                weapons.get(mostRecentWeaponNum).getWeaponHitBox().intersects(pipeSetArray.get(i).getDownHitBox()))) {
+                    System.out.println("HAH");
+                    weapons.get(mostRecentWeaponNum).disableWeapon();
                     leastRecentWeaponNum++;
                 }
             }
         }
 
+        // Update all weapons that are not being held
         for (int j = leastRecentWeaponNum; j <= mostRecentWeaponNum; j++) {
             if (!weapons.get(j).checkDisabled() && !weapons.get(j).checkIfHeld()) {
                 weapons.get(j).updateEntity();
             }
+            if (weapons.get(j).getWeaponHitBox().right() < 0) {
+                weapons.get(j).isOffScreen();
+                leastRecentWeaponNum++;
+            }
         }
 
+        // Update the weapon that is being held
         if(bird.isEquipped()) {
             if(bird.getIsUp()) {
                 weapons.get(equippedItemIndex).updateHeldWeapon(birdHitBox1);
@@ -109,37 +118,7 @@ public class Level1 extends Level{
             }
         }
 
-        if(input.wasPressed(Keys.S)) {
-            weapons.get(equippedItemIndex).shootWeapon();
-            bird.unequip();
-        }
-
-        if(equippedItemIndex != null && !weapons.get(equippedItemIndex).checkDisabled()
-                && weapons.get(equippedItemIndex).isBeingShot()){
-            weapons.get(equippedItemIndex).updateShootingWeapon();
-
-            for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
-                if (weapons.get(equippedItemIndex).getWeaponHitBox().intersects(pipeSetArray.get(i).getUpHitBox()) ||
-                        weapons.get(equippedItemIndex).getWeaponHitBox().intersects(pipeSetArray.get(i).getDownHitBox())) {
-                    System.out.println("HIT!");
-                    if(weapons.get(equippedItemIndex) instanceof Bomb ||  pipeSetArray.get(i) instanceof PlasticPipe) {
-                        System.out.println("BREAK!");
-                        score ++;
-                        pipeSetArray.get(i).breaks();
-                        leastRecentPipeSetNum++;
-                        weapons.get(equippedItemIndex).disableWeapon();
-                    }
-                }
-            }
-        }
-
-        for (int j = leastRecentWeaponNum; j <= mostRecentWeaponNum; j++) {
-            if (weapons.get(j).getWeaponHitBox().right() < 0) {
-                weapons.get(j).isOffScreen();
-                leastRecentWeaponNum++;
-            }
-        }
-
+        // Equipping a weapon
         if (!bird.isEquipped()) {
             for (int j = leastRecentWeaponNum; j <= mostRecentWeaponNum; j++) {
                 if (birdHitBox1.intersects(weapons.get(j).getWeaponHitBox()) ||
@@ -151,8 +130,35 @@ public class Level1 extends Level{
             }
         }
 
+        // Shooting
+        if(input.wasPressed(Keys.S)) {
+            weapons.get(equippedItemIndex).shootWeapon();
+            shotItemIndex = equippedItemIndex;
+            bird.unequip();
+        }
 
+        // Updating shooting weapon
+        if(shotItemIndex != null
+                && !weapons.get(shotItemIndex).checkDisabled()
+                && weapons.get(shotItemIndex).isBeingShot()){
+            weapons.get(shotItemIndex).updateShootingWeapon();
+            System.out.println("SHOOTING");
 
+            // Check if the weapon collides with a pipe
+            for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
+                if (weapons.get(shotItemIndex).getWeaponHitBox().intersects(pipeSetArray.get(i).getUpHitBox())
+                        || weapons.get(shotItemIndex).getWeaponHitBox().intersects(pipeSetArray.get(i).getDownHitBox())) {
+
+                    // If a weapon collides with a pipe, check if it can destroy it or not.
+                    if(weapons.get(shotItemIndex) instanceof Bomb ||  pipeSetArray.get(i) instanceof PlasticPipe) {
+                        score ++;
+                        pipeSetArray.get(i).breaks();
+                        leastRecentPipeSetNum++;
+                    }
+                    weapons.get(shotItemIndex).disableWeapon();
+                }
+            }
+        }
 
         frameCount++;
     }

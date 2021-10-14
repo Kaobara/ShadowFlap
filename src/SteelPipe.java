@@ -4,6 +4,7 @@ import bagel.util.Rectangle;
 
 public class SteelPipe extends EntitySet{
     private int framesOnScreen = 0;
+    private static final int SPAWN_FLAME_SPEED = 20;
 
     private final int PIPE_GAP = 168;
     private final Image PIPE_IMAGE = new Image("res/level-1/steelPipe.png");
@@ -32,6 +33,8 @@ public class SteelPipe extends EntitySet{
     }
 
     public int getFramesOnScreen() { return framesOnScreen; }
+
+    public static int getSPAWN_FLAME_SPEED() { return SPAWN_FLAME_SPEED; }
 
     public void spawnFlames() {
         FLAME_IMAGE.drawFromTopLeft(entityUpHitBox.left(), entityUpHitBox.bottom(), ROTATE_UPSIDE_DOWN);

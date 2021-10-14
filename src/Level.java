@@ -12,37 +12,47 @@ public abstract class Level {
     protected final int SCREEN_WIDTH = bagel.Window.getWidth();
     protected final int SCREEN_HEIGHT = Window.getHeight();
 
-    // Font size constants
-    protected final int FINAL_SCORE_HEIGHT_DIFFERENCE = 75;
+    // Font constants
+    private final int FINAL_SCORE_HEIGHT_DIFFERENCE = 75;
     protected final int INSTRUCTIONS_WIDTH = 612;
-    protected final int GAME_OVR_WIDTH = 287;
-    protected final int CONGRATS_WIDTH = 483;
-    protected final int FINAL_SCORE_WIDTH = 376;
-    protected final int FONT_SIZE = 48;
+    private final int GAME_OVR_WIDTH = 287;
+    private final int CONGRATS_WIDTH = 483;
+    private final int FINAL_SCORE_WIDTH = 376;
+    private final int FONT_SIZE = 48;
     protected final int FONT_HEIGHT = 29;
     protected final Font FONT = new Font("res/font/slkscr.ttf", FONT_SIZE);
-    protected int levelThreshold;
-    protected final int MAX_TIME_SCALE = 5;
 
     protected final Point INSTRUCTION_POINT = new Point((SCREEN_WIDTH-INSTRUCTIONS_WIDTH)/2,
             (SCREEN_HEIGHT-FONT_HEIGHT)/2);
-    protected final Point GAME_OVR_POINT = new Point((SCREEN_WIDTH-GAME_OVR_WIDTH)/2,
+    private final Point GAME_OVR_POINT = new Point((SCREEN_WIDTH-GAME_OVR_WIDTH)/2,
             (SCREEN_HEIGHT-FONT_HEIGHT)/2);
-    protected final Point CONGRATS_POINT = new Point((SCREEN_WIDTH-CONGRATS_WIDTH)/2,
+    private final Point CONGRATS_POINT = new Point((SCREEN_WIDTH-CONGRATS_WIDTH)/2,
             (SCREEN_HEIGHT-FONT_HEIGHT)/2);
-    protected final Point FINAL_SCORE_POINT = new Point((SCREEN_WIDTH-FINAL_SCORE_WIDTH)/2,
+    private final Point FINAL_SCORE_POINT = new Point((SCREEN_WIDTH-FINAL_SCORE_WIDTH)/2,
             ((SCREEN_HEIGHT-FONT_HEIGHT)/2)+FINAL_SCORE_HEIGHT_DIFFERENCE);
-    protected final Point COUNTER_POINT = new Point(100, 100);
+    private final Point COUNTER_POINT = new Point(100, 100);
 
+    // Scores
+    protected int levelScoreThreshold;
+    protected boolean passedThreshold = false;
+    protected int score = 0;
+
+    private final int PIPE_SCORE_BUFFER_RANGE = 50;
+
+    // Timescale Attributes
+    private final int MAX_TIME_SCALE = 5;
+    private final double TIME_SCALE_VALUE = 1.5;
+    protected Entity entityTimeScale = new Entity();
+    private int currentTimeScale = 0;
 
     // Pipes
     protected ArrayList<EntitySet> pipeSetArray = new ArrayList<EntitySet>();
     protected int leastRecentPipeSetNum = 0;
     protected int mostRecentPipeSetNum = -1;
     protected int pipeSetNum = 0;
+    protected double spawnSpeed = 100;
 
-    protected Point pipeSetPoint;
-
+    // Bird
     protected final Point BIRD_SPAWN = new Point(200, 350);
     protected Bird bird;
     bagel.util.Rectangle birdHitBox1;
@@ -52,21 +62,15 @@ public abstract class Level {
     protected Lives lifebar;
     abstract void loseLife();
 
-    // Scores
-    protected int score = 0;
+
     protected int frameCount = 0;
-
-    protected int currentTimeScale = 0;
-    protected double spawnSpeed = 100;
-
-    protected Entity entityTimeScale = new Entity();
 
     // Pipe Options
     protected final int MAX_SPAWN = 100;
     protected final int MID_SPAWN = 300;
     protected final int MIN_SPAWN = 500;
 
-    protected boolean passedThreshold = false;
+
 
     public Level() {
     }
@@ -79,12 +83,32 @@ public abstract class Level {
         return passedThreshold;
     }
 
+    // Timescale Options
+
+
+    public void increaseTimeScale() {
+        if(currentTimeScale<MAX_TIME_SCALE) {
+            entityTimeScale.increaseEntitySpeed(TIME_SCALE_VALUE);
+            spawnSpeed = spawnSpeed / TIME_SCALE_VALUE;
+            spawnSpeed = Math.round(spawnSpeed);
+            currentTimeScale++;
+        }
+    }
+
+    public void decreaseTimeScale() {
+        if(currentTimeScale>0) {
+            entityTimeScale.decreaseEntitySpeed(TIME_SCALE_VALUE);
+            spawnSpeed = spawnSpeed * TIME_SCALE_VALUE;
+            spawnSpeed = Math.round(spawnSpeed);
+            currentTimeScale--;
+        }
+    }
+
     public void updateStart(Input input) {
         FONT.drawString("PRESS SPACE TO START", INSTRUCTION_POINT.x, INSTRUCTION_POINT.y);
     }
 
     public void updateRunning(Input input) {
-
         // A constant score.
         FONT.drawString("SCORE:" + score, COUNTER_POINT.x, COUNTER_POINT.y);
         lifebar.drawLives();
@@ -126,22 +150,25 @@ public abstract class Level {
                 leastRecentPipeSetNum++;
             }
 
-            //Win condition
+            //Scoring condition
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
                 if (!pipeSetArray.get(i).isBroken()) {
-                    if (birdHitBox1.centre().x < pipeSetArray.get(i).getUpHitBox().right() && birdHitBox1.centre().x > pipeSetArray.get(i).getUpHitBox().left() + 50
-                            || birdHitBox2.centre().x < pipeSetArray.get(i).getUpHitBox().right() && birdHitBox2.centre().x > pipeSetArray.get(i).getUpHitBox().left() + 50) {
+                    if ((birdHitBox1.centre().x < pipeSetArray.get(i).getUpHitBox().right()
+                            && birdHitBox1.centre().x > pipeSetArray.get(i).getUpHitBox().left() + PIPE_SCORE_BUFFER_RANGE)
+                            || (birdHitBox2.centre().x < pipeSetArray.get(i).getUpHitBox().right()
+                            && birdHitBox2.centre().x > pipeSetArray.get(i).getUpHitBox().left() + PIPE_SCORE_BUFFER_RANGE)) {
                         score++;
                     }
                 }
             }
 
-
             // If hitboxes collide, game over
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
                 if (!pipeSetArray.get(i).isBroken()) {
-                    if (birdHitBox1.intersects(pipeSetArray.get(i).getUpHitBox()) || birdHitBox1.intersects(pipeSetArray.get(i).getDownHitBox())
-                            || birdHitBox2.intersects(pipeSetArray.get(i).getUpHitBox()) || birdHitBox2.intersects(pipeSetArray.get(i).getDownHitBox())) {
+                    if (birdHitBox1.intersects(pipeSetArray.get(i).getUpHitBox())
+                            || birdHitBox1.intersects(pipeSetArray.get(i).getDownHitBox())
+                            || birdHitBox2.intersects(pipeSetArray.get(i).getUpHitBox())
+                            || birdHitBox2.intersects(pipeSetArray.get(i).getDownHitBox())) {
                         loseLife();
                         pipeSetArray.get(i).breaks();
                         leastRecentPipeSetNum++;
@@ -151,7 +178,7 @@ public abstract class Level {
 
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
                 if(pipeSetArray.get(i) instanceof SteelPipe) {
-                    if(((SteelPipe) pipeSetArray.get(i)).getFramesOnScreen()%20 == 0) {
+                    if(((SteelPipe) pipeSetArray.get(i)).getFramesOnScreen()%SteelPipe.getSPAWN_FLAME_SPEED() == 0) {
                         ((SteelPipe) pipeSetArray.get(i)).spawnFlames();
                         if (birdHitBox1.intersects(((SteelPipe) pipeSetArray.get(i)).getFlameUpHitBox()) ||
                                 birdHitBox1.intersects(((SteelPipe) pipeSetArray.get(i)).getFlameDownHitBox()) ||
@@ -166,9 +193,7 @@ public abstract class Level {
             }
         }
 
-
-
-        if(score == levelThreshold) {
+        if(score == levelScoreThreshold) {
             passedThreshold = true;
         }
     }
@@ -182,21 +207,5 @@ public abstract class Level {
         FONT.drawString("CONGRATULATIONS", CONGRATS_POINT.x,CONGRATS_POINT.y);
     }
 
-    public void increaseTimeScale() {
-        if(currentTimeScale<MAX_TIME_SCALE) {
-            entityTimeScale.increaseEntitySpeed();
-            spawnSpeed = spawnSpeed / 1.5;
-            spawnSpeed = Math.round(spawnSpeed);
-            currentTimeScale++;
-        }
-    }
 
-    public void decreaseTimeScale() {
-        if(currentTimeScale>0) {
-            entityTimeScale.decreaseEntitySpeed();
-            spawnSpeed = spawnSpeed * 1.5;
-            spawnSpeed = Math.round(spawnSpeed);
-            currentTimeScale--;
-        }
-    }
 }

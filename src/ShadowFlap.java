@@ -14,17 +14,13 @@ import java.util.ArrayList;
  * @author: Mohamad Danielsyah Mahmud
  */
 public class ShadowFlap extends AbstractGame {
+    // Screen Widths and Height
     private final int SCREEN_WIDTH = Window.getWidth();
     private final int SCREEN_HEIGHT = Window.getHeight();
-
-
 
     // The Backgrounds
     private final Image BACKGROUND_IMAGE0 = new Image("res/level-0/background.png");
     private final Image BACKGROUND_IMAGE1 = new Image("res/level-1/background.png");
-
-
-
 
     // Game states. Default state is start,
     private enum GameState{

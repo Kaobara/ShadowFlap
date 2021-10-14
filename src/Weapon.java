@@ -37,6 +37,7 @@ public class Weapon extends Entity{
                 getEntityImage().draw(getPoint().x, getPoint().y);
                 weaponHitBox = getEntityImage().getBoundingBoxAt(getPoint());
             } else {
+                System.out.println("DESPAWN");
                 disableWeapon();
             }
         }
@@ -64,6 +65,7 @@ public class Weapon extends Entity{
     }
 
     public void disableWeapon() {
+        System.out.println("DISABLED");
         disabled = true;
     }
 

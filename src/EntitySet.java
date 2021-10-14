@@ -52,11 +52,6 @@ public class EntitySet {
         entityDown.updateEntity();
         entityUpHitBox = entityUp.getEntityImage().getBoundingBoxAt(entityUp.getPoint());
         entityDownHitBox = entityDown.getEntityImage().getBoundingBoxAt(entityDown.getPoint());
-        if(broken == false) {
-        } else {
-            entityUpHitBox = BROKEN_REC;
-            entityDownHitBox = BROKEN_REC;
-        }
     }
 
     public void breaks() {

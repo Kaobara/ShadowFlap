@@ -46,11 +46,11 @@ public class Entity {
     }
 
     // Increase speed
-    public void increaseEntitySpeed() {
-        moveSpeed *= 1.5;
+    public void increaseEntitySpeed(double timeScaleValue) {
+        moveSpeed *= timeScaleValue;
     }
-    public void decreaseEntitySpeed() {
-        moveSpeed /= 1.5;
+    public void decreaseEntitySpeed(double timeScaleValue) {
+        moveSpeed /= timeScaleValue;
     }
 
     public void resetEntitySpeed() {
