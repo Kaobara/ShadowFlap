@@ -14,20 +14,14 @@ import java.util.ArrayList;
  * @author: Mohamad Danielsyah Mahmud
  */
 public class ShadowFlap extends AbstractGame {
-    // Screen Widths and Height
-    private final int SCREEN_WIDTH = Window.getWidth();
-    private final int SCREEN_HEIGHT = Window.getHeight();
-
-    // The Backgrounds
-    private final Image BACKGROUND_IMAGE0 = new Image("res/level-0/background.png");
-    private final Image BACKGROUND_IMAGE1 = new Image("res/level-1/background.png");
 
     // Game states. Default state is start,
     private enum GameState{
         Start,
         Running,
         WinEnd,
-        LoseEnd
+        LoseEnd,
+        LevelUp
     };
     private GameState state = GameState.Start;
 
@@ -36,6 +30,7 @@ public class ShadowFlap extends AbstractGame {
         Level0,
         Level1
     };
+
     private LevelState currentLevelState = LevelState.Level0;
     private Level level = new Level1();
 
@@ -50,61 +45,78 @@ public class ShadowFlap extends AbstractGame {
         game.run();
     }
 
-
-
     /**
      * Performs a state update.
      * allows the game to exit when the escape key is pressed.
      */
     @Override
     public void update(Input input) {
+        // Timescale options. If L is pressed, increase the timescale of the level.
+        // If K is pressed, decrease the timescale of the level
         if(input.wasPressed(Keys.L)) {
             level.increaseTimeScale();
         }
         if(input.wasPressed(Keys.K)) {
             level.decreaseTimeScale();
         }
+
+        // Check if the level is level 0
         if(currentLevelState == LevelState.Level0) {
+            level.updateBackground();
 
-
-            BACKGROUND_IMAGE0.draw(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
             // Starting state. Press space to start
             if(state == GameState.Start) {
-                level.updateStart(input);
+                level.updateStart();
                 if (input.isDown(Keys.SPACE)) {
-                    level.frameCount = 0;  // Think about protection and being able to directly edit frameCount ltr
                     state = GameState.Running;
                 }
             }
 
+            // Running State of level 0
             if(state == GameState.Running) {
                 level.updateRunning(input);
+
+                // If the lives reach 0, end. If you pass the threshold of the level, you level up.
                 if(level.getLives()==0) {
                     state = GameState.LoseEnd;
                 }
                 if(level.isPassedThreshold()) {
-                    currentLevelState = LevelState.Level1;
-                    state = GameState.Start;
-                    level = new Level1();
+                    level.resetFrames();
+                    state = GameState.LevelUp;
                 }
             }
 
+            // Levelup state of the level. When it's been in the LEVEL_UP screen for as long as the "level up frames"
+            // it will move to the next level.
+            if(state == GameState.LevelUp) {
+                if(level.getFrames()%level.getLEVEL_UP_FRAMES() == 0 && level.getFrames() != 0) {
+                    currentLevelState = LevelState.Level1;
+                    state = GameState.Start;
+                    level = new Level1();
+                } else {
+                    level.updateLevelUp();
+                }
+            }
+
+            // Lose screen
             if(state == GameState.LoseEnd) {
-                level.updateLoseEnd(input);
+                level.updateLoseEnd();
             }
         }
 
+        // Check if a level is level 1
         if(currentLevelState == LevelState.Level1) {
-            BACKGROUND_IMAGE1.draw(SCREEN_WIDTH/2.0, SCREEN_HEIGHT/2.0);
+            level.updateBackground();
 
+            // Starting state. Press space to start
             if(state == GameState.Start) {
-                level.updateStart(input);
+                level.updateStart();
                 if (input.isDown(Keys.SPACE)) {
-                    level.frameCount = 0;  // Think about protection and being able to directly edit frameCount ltr
                     state = GameState.Running;
                 }
             }
 
+            // Running State of level 1
             if(state == GameState.Running) {
                 level.updateRunning(input);
                 if(level.getLives()==0) {
@@ -116,12 +128,14 @@ public class ShadowFlap extends AbstractGame {
             }
         }
 
+        // Lose screen
         if(state == GameState.LoseEnd) {
-            level.updateLoseEnd(input);
+            level.updateLoseEnd();
         }
 
+        // Win Screen
         if(state == GameState.WinEnd) {
-            level.updateWinEnd(input);
+            level.updateWinEnd();
 
         }
     }

@@ -4,10 +4,12 @@ import bagel.Image;
 import bagel.util.Rectangle;
 
 public class Weapon extends Entity{
+    // Attributes of the Weapon
     protected int maxRange;
     private int currentRange = 0;
     private final int SHOOT_STEP = 5;
 
+    // state of the weapon
     private boolean disabled = false;
     private boolean isHeld = false;
     private boolean isShot = false;
@@ -85,7 +87,7 @@ public class Weapon extends Entity{
      */
     public void updateShootingWeapon() {
         if(isShot && !disabled) {
-            if (currentRange < maxRange) {
+            if (currentRange != maxRange) {
                 x += SHOOT_STEP;
                 currentRange++;
                 getEntityImage().draw(getPoint().x, getPoint().y);
@@ -95,7 +97,4 @@ public class Weapon extends Entity{
             }
         }
     }
-
-
-
 }
