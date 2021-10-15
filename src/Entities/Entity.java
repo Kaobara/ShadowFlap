@@ -1,7 +1,10 @@
+package Entities;
+
 import bagel.DrawOptions;
 import bagel.Image;
 import bagel.Window;
 import bagel.util.Point;
+import bagel.util.Rectangle;
 
 public class Entity {
     // The image of the entity
@@ -12,8 +15,9 @@ public class Entity {
     protected double y;
     private DrawOptions entityRotation = new DrawOptions().setRotation(0);
     private static double moveSpeed = 3;
+    private Rectangle entityHitBox;
 
-    // Entity constructor
+    // Entities.Entity constructor
     public Entity() {
     }
 
@@ -39,10 +43,16 @@ public class Entity {
         moveSpeed *= 1.5;
     }
 
-    // Entity moves to the left at a constant velocity.
+    // Entities.Entity moves to the left at a constant velocity.
     public void updateEntity() {
         x -= moveSpeed;
         entityImage.drawFromTopLeft(x, y, entityRotation);
+        getHitBox();
+    }
+
+    public Rectangle getHitBox() {
+        entityHitBox = getEntityImage().getBoundingBoxAt(getPoint());
+        return entityHitBox;
     }
 
     // Increase speed

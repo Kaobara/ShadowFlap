@@ -1,7 +1,7 @@
+import Entities.PlasticPipe;
 import bagel.Image;
 import bagel.Input;
-import bagel.Keys;
-import bagel.util.Rectangle;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Level0 extends Level {

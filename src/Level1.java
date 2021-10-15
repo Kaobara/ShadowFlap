@@ -1,7 +1,7 @@
+import Entities.*;
 import bagel.Image;
 import bagel.Input;
 import bagel.Keys;
-import bagel.Window;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -89,8 +89,8 @@ public class Level1 extends Level{
             // If a weapon spawns in the same space as a pipe, immediately disable it
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
                 if (!weapons.get(mostRecentWeaponNum).checkDisabled() &&
-                        (weapons.get(mostRecentWeaponNum).getWeaponHitBox().intersects(pipeSetArray.get(i).getUpHitBox()) ||
-                                weapons.get(mostRecentWeaponNum).getWeaponHitBox().intersects(pipeSetArray.get(i).getDownHitBox()))) {
+                        (weapons.get(mostRecentWeaponNum).getHitBox().intersects(pipeSetArray.get(i).getUpHitBox()) ||
+                                weapons.get(mostRecentWeaponNum).getHitBox().intersects(pipeSetArray.get(i).getDownHitBox()))) {
                     System.out.println("HAH");
                     weapons.get(mostRecentWeaponNum).disableWeapon();
                     leastRecentWeaponNum++;
@@ -103,8 +103,8 @@ public class Level1 extends Level{
             if (!weapons.get(j).checkDisabled() && !weapons.get(j).checkIfHeld()) {
                 weapons.get(j).updateEntity();
             }
-            if (weapons.get(j).getWeaponHitBox().right() < 0) {
-                weapons.get(j).isOffScreen();
+            if (weapons.get(j).getHitBox().right() < 0) {
+                weapons.get(j).disableWeapon();
                 leastRecentWeaponNum++;
             }
         }
@@ -121,9 +121,9 @@ public class Level1 extends Level{
         // Equipping a weapon
         if (!bird.isEquipped()) {
             for (int j = leastRecentWeaponNum; j <= mostRecentWeaponNum; j++) {
-                if (birdHitBox1.intersects(weapons.get(j).getWeaponHitBox()) ||
-                        birdHitBox1.intersects(weapons.get(j).getWeaponHitBox())) {
-                    bird.equippingItem();
+                if (birdHitBox1.intersects(weapons.get(j).getHitBox()) ||
+                        birdHitBox1.intersects(weapons.get(j).getHitBox())) {
+                    bird.equip();
                     weapons.get(j).caughtWeapon();
                     equippedItemIndex = j;
                 }
@@ -146,8 +146,8 @@ public class Level1 extends Level{
 
             // Check if the weapon collides with a pipe
             for (int i = leastRecentPipeSetNum; i <= mostRecentPipeSetNum; i++) {
-                if (weapons.get(shotItemIndex).getWeaponHitBox().intersects(pipeSetArray.get(i).getUpHitBox())
-                        || weapons.get(shotItemIndex).getWeaponHitBox().intersects(pipeSetArray.get(i).getDownHitBox())) {
+                if (weapons.get(shotItemIndex).getHitBox().intersects(pipeSetArray.get(i).getUpHitBox())
+                        || weapons.get(shotItemIndex).getHitBox().intersects(pipeSetArray.get(i).getDownHitBox())) {
 
                     // If a weapon collides with a pipe, check if it can destroy it or not.
                     if(weapons.get(shotItemIndex) instanceof Bomb ||  pipeSetArray.get(i) instanceof PlasticPipe) {

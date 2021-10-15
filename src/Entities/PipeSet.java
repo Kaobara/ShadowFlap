@@ -1,11 +1,12 @@
+package Entities;
+
 import bagel.DrawOptions;
 import bagel.Image;
 import bagel.Window;
 import bagel.util.Point;
 import bagel.util.Rectangle;
 
-public class EntitySet {
-    private final Rectangle BROKEN_REC = new Rectangle(20, 0, 0, 0);
+public class PipeSet {
     private Boolean broken = false;
     private Boolean outOfScreen = false;
 
@@ -14,8 +15,7 @@ public class EntitySet {
 
     protected int ySpawn;
     protected Image entityImage;
-    protected int gap;
-    private Point entitySetPoint;
+    private final int PIPE_GAP = 168;
     private Entity entityUp;
     private Entity entityDown;
 
@@ -39,7 +39,7 @@ public class EntitySet {
 
     public void spawnEntitySet(int ySpawn) {
         entityUp = new Entity(entityImage, -SCREEN_HEIGHT+ySpawn);
-        entityDown = new Entity(entityImage, ySpawn+gap, ROTATE_UPSIDE_DOWN);
+        entityDown = new Entity(entityImage, ySpawn+PIPE_GAP, ROTATE_UPSIDE_DOWN);
     }
 
     public void increaseMoveSpeed() {
@@ -50,8 +50,8 @@ public class EntitySet {
     public void updateEntitySet() {
         entityUp.updateEntity();
         entityDown.updateEntity();
-        entityUpHitBox = entityUp.getEntityImage().getBoundingBoxAt(entityUp.getPoint());
-        entityDownHitBox = entityDown.getEntityImage().getBoundingBoxAt(entityDown.getPoint());
+        entityUpHitBox = entityUp.getHitBox();
+        entityDownHitBox = entityDown.getHitBox();
     }
 
     public void breaks() {

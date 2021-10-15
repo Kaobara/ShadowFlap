@@ -1,11 +1,12 @@
+import Entities.Entity;
+import Entities.PipeSet;
+import Entities.SteelPipe;
 import bagel.*;
 import bagel.Font;
-import bagel.Image;
 import bagel.Window;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public abstract class Level {
     // Width Constants... THINK ABOUT PROGRAM-WIDE CONSTANTS!!!!
@@ -46,7 +47,7 @@ public abstract class Level {
     private int currentTimeScale = 0;
 
     // Pipes
-    protected ArrayList<EntitySet> pipeSetArray = new ArrayList<EntitySet>();
+    protected ArrayList<PipeSet> pipeSetArray = new ArrayList<PipeSet>();
     protected int leastRecentPipeSetNum = 0;
     protected int mostRecentPipeSetNum = -1;
     protected int pipeSetNum = 0;

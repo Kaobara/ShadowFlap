@@ -7,8 +7,8 @@ import  bagel.util.Vector2;
 
 public class Bird {
     // Images of the bird
-    private Image birdImageUp;
-    private Image birdImageDown;
+    private final Image BIRD_IMAGE_UP;
+    private final Image BIRD_IMAGE_DOWN;
 
     // Position Coordinates
     private double x;
@@ -20,6 +20,7 @@ public class Bird {
     // Acceleration and Velocity attributes of the bird
     private final double MAX_FALL_SPEED = 10;
     private final double GRAVITY = 0.4;
+    private final double INITIAL_FLY_VELOCITY = -6;
     private double velocity=0;
 
     // Weapons
@@ -29,25 +30,43 @@ public class Bird {
     public Bird(double x, double y, Image birdImageUp, Image birdImageDown) {
         this.x = x;
         this.y = y;
-        this.birdImageUp = birdImageUp;
-        this.birdImageDown = birdImageDown;
+        this.BIRD_IMAGE_UP = birdImageUp;
+        this.BIRD_IMAGE_DOWN = birdImageDown;
     }
 
-    // Getters for attributes of the bird
+    // Getters and Setters for attributes of the bird
+    public Image getBirdImageUp() {
+        return BIRD_IMAGE_UP;
+    }
+    public Image getBirdImageDown() {
+        return BIRD_IMAGE_DOWN;
+    }
+    public boolean getIsUp() {
+        return isUp;
+    }
+
+    // Methods for Bird Physics
+    public Point getPoint() {
+        return new Point(x, y);
+    }
     public double getVelocity() {
         return velocity;
     }
 
-    public Point getPoint() {
-        return new Point(x, y);
+    // Methods regarding Equipped Items
+    public boolean isEquipped() {
+        return equippedItem;
+    }
+    public void equip() {
+        equippedItem = true;
+    }
+    public void unequip() {
+        equippedItem = false;
     }
 
-    public Image getBirdImageDown() {
-        return birdImageDown;
-    }
-
-    public Image getBirdImageUp() {
-        return birdImageUp;
+    // Method for when the bird "flies" when space key is inputted
+    public void setInitialFlyVelocity() {
+        velocity = INITIAL_FLY_VELOCITY;
     }
 
     // Method for gravity downwards acceleration
@@ -57,35 +76,14 @@ public class Bird {
             velocity += GRAVITY;
         }
         isUp = false;
-        birdImageDown.draw(x, y);
+        BIRD_IMAGE_DOWN.draw(x, y);
     }
 
     // Method for drawing the bird with wings up
     public void fly() {
         isUp = true;
-        birdImageUp.draw(x, y);
+        BIRD_IMAGE_UP.draw(x, y);
         y += velocity;
         velocity += GRAVITY;
-    }
-
-    // Method for when the bird "flies" when space key is inputted
-    public void setInitialFlyVelocity() {
-        velocity = -6;
-    }
-
-    public boolean isEquipped() {
-        return equippedItem;
-    }
-
-    public void equippingItem() {
-        equippedItem = true;
-    }
-
-    public void unequip() {
-        equippedItem = false;
-    }
-
-    public boolean getIsUp() {
-        return isUp;
     }
 }

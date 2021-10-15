@@ -1,3 +1,5 @@
+package Entities;
+
 import bagel.Image;
 
 public class Rock extends Weapon{
